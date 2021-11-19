@@ -1,0 +1,19 @@
+{% extends "content_wrapper.html" %}
+
+{% block content %}
+<div class="text-center">
+  <img id="video" class="rounded-3" src="{{ url_for('video_stream') }}">
+</div>
+
+<div id="recorder" class="mt-2 text-center">
+    <a class="btn btn-secondary" id="pause" title="Pause exercise">
+      <i class="fas fa-pause"></i>
+    </a>
+    <a class="btn btn-secondary" id="speech" title="Enable voice command">
+      <i class="fas fa-microphone-slash"></i>
+    </a>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}"></script>
+</div>
+
+{% endblock %}

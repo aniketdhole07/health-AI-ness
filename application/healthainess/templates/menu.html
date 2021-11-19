@@ -1,0 +1,22 @@
+{% block menu %}
+
+    <!-- List of pages in the menu to be rendered -->
+    <!-- ,
+      ('/config', 'page_config', 'Configuration')
+     -->
+    {% set navigation_bar = [
+      ('/', 'page_start', 'Start'),
+      ('/exercise', 'page_exercise', 'Exercise'),
+      ('/report', 'page_report', 'Report')
+      ] -%}
+    {% set active_page = active_page|default('index') -%}
+
+    <div class="d-grid gap-3">
+        {% for href, id, caption in navigation_bar %}
+        <a href="{{href}}" class="btn btn-lg btn-{% if request.endpoint == id %}primary{% else %}secondary{% endif %} p-4 m-2" type="button">
+            {{caption}}
+        </a>
+        {% endfor %}
+    </div>
+
+{% endblock %}

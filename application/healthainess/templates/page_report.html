@@ -1,0 +1,98 @@
+{% extends "content_wrapper.html" %}
+
+{% block content %}
+<h2>
+    Report
+</h2>
+<p>
+
+</p>
+<canvas id="report" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js" integrity="sha256-bC3LCZCwKeehY6T4fFi9VfOU0gztUa+S4cnkIhVPZ5E=" crossorigin="anonymous">
+
+</script>
+<script>
+const CHART_COLORS = {
+    red: 'rgb(255, 99, 132)',
+    orange: 'rgb(255, 159, 64)',
+    yellow: 'rgb(255, 205, 86)',
+    green: 'rgb(75, 192, 192)',
+    blue: 'rgb(54, 162, 235)',
+    purple: 'rgb(153, 102, 255)',
+    grey: 'rgb(201, 203, 207)'
+};
+const colors = [CHART_COLORS.blue, CHART_COLORS.green, CHART_COLORS.purple, CHART_COLORS.red, CHART_COLORS.orange, CHART_COLORS.yellow ];
+
+
+async function fetchReport() {
+    const url = "http://0.0.0.0:5000/api/report/exercisesDoneByDayFromTo";
+    const response = await fetch(url);
+    return await response.json();
+}
+
+fetchReport().then(datapoints => {
+    const ymds = datapoints.map(
+        function(i) {
+            return i.ymdLabel;
+        })
+    const ymdsUnique = [...new Set(ymds)].sort();
+
+    const names = datapoints.map(
+        function(i) {
+            return i.name;
+        })
+    const namesUnique = [...new Set(names)].sort();
+
+    exerciseDurations = []
+
+    for(n of namesUnique) {
+        value = 0;
+        dates = [];
+        for(y of ymdsUnique) {
+            for(i of datapoints) {
+                if(i.name === n && i.ymdLabel === y) {
+                    value = i.duration_s_acc;
+                }
+            }
+            dates.push(value);
+            value = 0;
+        }
+        exerciseDurations.push(dates);
+    }
+
+    var datasets = []
+
+    for(let [i, nameUnique] of namesUnique.entries() ) {
+        datasets.push(
+            {
+                label: nameUnique,
+                data: exerciseDurations[i],
+                backgroundColor: colors[i]
+            }
+        )
+    }
+
+    var ctx = document.getElementById('report').getContext('2d');
+    var report = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ymdsUnique,
+            datasets: datasets
+        },
+        options: {
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true,
+                }
+            }
+        }
+    });
+})
+</script>
+
+{% endblock %}
+
